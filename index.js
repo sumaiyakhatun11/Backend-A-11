@@ -30,10 +30,11 @@ async function run() {
         const database = client.db("Assignment-11");
 
         const usersCollection = database.collection("users");
+        const productsCollection = database.collection("products");
 
         app.post('/users', async (req, res) => {
             const user = req.body;
-            user.role = 'donor';
+            // user.role = 'buyer';
             user.createdAt = new Date();
             const result = await usersCollection.insertOne(user);
             res.send(result);
@@ -45,6 +46,15 @@ async function run() {
             const user = await usersCollection.findOne(query);
             res.send(user);
         });
+
+
+        app.post('/products', async (req, res) => {
+            const product = req.body;
+            product.createdAt = new Date();
+            const result = await productsCollection.insertOne(product);
+            res.send(result);
+        });
+
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
