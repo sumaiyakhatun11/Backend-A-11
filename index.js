@@ -10,7 +10,7 @@ app.use(express.json());
 
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = "mongodb+srv://Assignment-11:e3qB88sNDuVaDgTV@cluster0.052zdja.mongodb.net/?appName=Cluster0";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -54,6 +54,42 @@ async function run() {
             const result = await productsCollection.insertOne(product);
             res.send(result);
         });
+
+        app.get('/manager/products/:email', async (req, res) => {
+            const { email } = req.params;
+            console.log(email);
+            const query = { managerEmail: email };
+            const products = await productsCollection.find(query).toArray();
+            res.send(products);
+        });
+
+        app.delete('/manager/product/:id', async (req, res) => {
+            const { id } = req.params;
+            const query = { _id: new ObjectId(id) };
+            const result = await productsCollection.deleteOne(query);
+            res.send(result);
+        }
+        );
+
+        app.get('/manager/product/:id', async (req, res) => {
+            const { id } = req.params;
+            const query = { _id: new ObjectId(id) };
+            const product = await productsCollection.findOne(query);
+            res.send(product);
+        }
+        );
+
+        app.put('/manager/updateProduct/:id', async (req, res) => {
+            const { id } = req.params;
+            const updatedProduct = req.body;
+            const filter = { _id: new ObjectId(id) };
+            const updateDoc = {
+                $set: updatedProduct
+            };
+            const result = await productsCollection.updateOne(filter, updateDoc);
+            res.send(result);
+        }
+        );
 
 
         // Send a ping to confirm a successful connection
